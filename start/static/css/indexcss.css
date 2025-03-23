@@ -1,0 +1,18 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background-color: #141316;
+}
+footer {
+    background-color: #306e20;
+    color: white;
+    padding: 1em 0;
+    width: 100%;
+    bottom: 0;
+}
+.carousel-item img {
+    height: 25vh; /* Adjust the height to fill 25% of the viewport height */
+    object-fit: cover; /* This ensures the image covers the entire area */
+}

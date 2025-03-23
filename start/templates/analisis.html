@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisis - VialCalc</title>
+    <link href="{% static 'css/indexcss.css' %}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+<body data-bs-theme="dark">
+    <header>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#">VialCalc</a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="{% url 'index' %}">Inicio</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link active" href="#">Analisis</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+    </header>
+    <main>
+        <div class="container p-3" data-bs-theme="dark">
+            <h1>Análisis de Datos</h1>
+            <p>Esta página está dedicada al análisis de datos de mortalidad en las vías de Colombia.</p>
+
+            <!-- Table -->
+            <h2>Lista de Tramos Únicos</h2>
+            <table class="table table-striped table-dark table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th style="width: 10%;">Ver</th> 
+                        <th>Tramo</th>
+                        <th>Longitud del Tramo (km)</th>
+                        <th style="color: rgb(235, 151, 151);">Fallecidos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in analisis_data %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'tramo_detail' item.tramo %}" class="btn btn-outline-success">
+                                    Detalles
+                                </a>
+                            </td>
+                            <td>{{ item.tramo }}</td>
+                            <td>{{ item.tramo_length }}</td>
+                            <td style="color: red;">{{ item.total_fallecidos }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2023 VialCalc. Todos los derechos reservados.</p>
+    </footer>
+    <script id="analisis-data" type="application/json">
+        {{ analisis_data|safe }}
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

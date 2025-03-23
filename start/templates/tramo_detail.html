@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Tramo - {{ tramo_info.tramo }}</title>
+    <link href="{% static 'css/indexcss.css' %}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+<body data-bs-theme="dark">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'index' %}">VialCalc</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'analisis' %}"><-Análisis</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main class="container-fluid p-4">
+        <h1 class="mb-4">{{ tramo_info.tramo }}</h1>
+        <div class="row mb-4">
+            <!-- First Column: Tramo Details -->
+            <div class="col-md-3">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <p><strong>Longitud del Tramo (km):</strong> {{ tramo_info.tramo_length }}</p>
+                        <p><strong>Total Fallecidos:</strong> <span style="color: red;">{{ tramo_info.total_fallecidos }}</span></p>
+                        <p><strong>Densidad de Fallecidos:</strong> {{ tramo_info.density|floatformat:2 }} fallecidos/km</p>
+                        <p><strong>Nombres de los sectores:</strong></p>
+                        <ul>
+                            {% for nombre in tramo_info.nombres %}
+                                <li>{{ nombre }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second Column: Mathematical Explanation -->
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5>Explicación Matemática</h5>
+                        <p>Para cada tramo homogéneo \( T_i \) de longitud \( L_i \), definimos una densidad de fallecidos constante:</p>
+                        <p style="font-family: 'Courier New', monospace;">
+                            f(x) = ρi = Total Fallecidos / Longitud del Tramo
+                        </p>
+                        <p>Donde:</p>
+                        <ul>
+                            <li>ρi: Densidad de fallecidos (fallecidos/km).</li>
+                            <li>Li: Longitud del tramo en kilómetros.</li>
+                            <li>f(x): Función constante de densidad.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Third Column: Graph -->
+            <div class="col-md-5">
+                <img src="data:image/png;base64,{{ tramo_info.graphic }}" alt="Gráfico de Densidad" class="img-fluid">
+                <h5 class="text-center">Gráfico de Densidad</h5>
+            </div>
+        </div>
+
+        <!-- Second Row: Integral Evaluada en la Primera Mitad -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5>Integral Evaluada en la Primera Mitad</h5>
+                        <p>Si el tramo homogéneo tiene una longitud total de {{ tramo_info.tramo_length }} kilómetros, evaluamos la integral en la primera mitad del tramo, es decir, desde 0 hasta {{ tramo_info.half_length|floatformat:1 }}.</p>
+                        <div class="alert alert-info" role="alert">
+                            <h5>¿Por qué la densidad es constante?</h5>
+                            <p>La densidad de fallecidos se calcula como el número total de fallecidos dividido por la longitud total del tramo. Dado que estamos evaluando la integral en la primera mitad del tramo, la densidad sigue siendo la misma porque es una propiedad promedio del tramo completo, no depende de la longitud parcial que se esté considerando.</p>
+                        </div>
+                        <p><strong>Cálculo:</strong></p>
+                        <p style="font-family: 'Courier New', monospace;">
+                            ∫0^{{ tramo_info.half_length|floatformat:1 }} {{ tramo_info.density|floatformat:2 }} dx = {{ tramo_info.integral_half|floatformat:2 }}
+                        </p>
+                        <p>El resultado de esta integral representa el número estimado de fallecidos en los primeros {{ tramo_info.half_length|floatformat:1 }} kilómetros del tramo.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <img src="data:image/png;base64,{{ tramo_info.graphic_half }}" alt="Gráfico de Integral Evaluada en la Primera Mitad" class="img-fluid">
+                <h5 class="text-center">Gráfico de Integral Evaluada en la Primera Mitad</h5>
+            </div>
+        </div>
+
+        <!-- third Row: Quadratic Modeling -->
+        <div class="alert alert-warning mb-4" role="alert">
+            <h4 class="alert-heading">Limitaciones de los Datos</h4>
+            <p>La siguiente representación es un ejemplo simple de cómo la aplicación podría ser más precisa si tuviéramos datos más detallados, como las coordenadas de inicio y fin de los tramos, y la ubicación exacta de los accidentes.</p>
+            <hr>
+            <p class="mb-0">Por ejemplo, si tuviéramos una función de densidad más compleja \( f(x) = 2x^2 + 3x + 1 \), podríamos calcular el número total de accidentes en un tramo específico evaluando la integral definida:</p>
+            <p style="font-family: 'Courier New', monospace;">
+                \(\int_0^5 (2x^2 + 3x + 1) dx = \left[\frac{2}{3}x^3 + \frac{3}{2}x^2 + x\right]_0^5 = 2 \cdot \frac{125}{3} + 3 \cdot \frac{25}{2} + 5 = 208.33\)
+            </p>
+            <p>Esto nos permitiría estimar con mayor precisión el número de accidentes en el tramo.</p>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5>Modelo Cuadrático de Densidad</h5>
+                        <p>Para modelar la densidad de accidentes a lo largo del tramo, podemos ajustar una función cuadrática basada en los datos de ubicación y densidad de accidentes.</p>
+                        <p><strong>Ejemplo:</strong></p>
+                        <ul>
+                            <li>Ubicaciones de accidentes (km): 0, 1, 2, 3, 4, 5</li>
+                            <li>Densidades de accidentes (ficticias): 2, 3, 5, 4, 2, 1</li>
+                        </ul>
+                        <p><strong>Modelo Cuadrático Ajustado:</strong></p>
+                        <p style="font-family: 'Courier New', monospace;">
+                            f(x) = {{ tramo_info.quadratic_coefficients.0|floatformat:2 }}x² + {{ tramo_info.quadratic_coefficients.1|floatformat:2 }}x + {{ tramo_info.quadratic_coefficients.2|floatformat:2 }}
+                        </p>
+                        <p><strong>Resolviendo la Integral:</strong></p>
+                        <p>Para calcular el número total estimado de accidentes en el tramo, resolvemos la integral definida de la función cuadrática entre los límites 0 y 5 km:</p>
+                        <p style="font-family: 'Courier New', monospace;">
+                            ∫0^5 f(x) dx = ∫0^5 ({{ tramo_info.quadratic_coefficients.0|floatformat:2 }}x² + {{ tramo_info.quadratic_coefficients.1|floatformat:2 }}x + {{ tramo_info.quadratic_coefficients.2|floatformat:2 }}) dx
+                        </p>
+                        <p>El resultado de esta integral es el área bajo la curva, que equivale a {{ tramo_info.area_under_curve|floatformat:2 }} accidentes.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <img src="data:image/png;base64,{{ tramo_info.graphic_quadratic }}" alt="Gráfico del Modelo Cuadrático" class="img-fluid">
+                <h5 class="text-center">Gráfico del Modelo Cuadrático</h5>
+            </div>
+        </div>
+    </main>
+    <footer class="text-center mt-4">
+        <p>&copy; 2023 VialCalc. Todos los derechos reservados.</p>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
